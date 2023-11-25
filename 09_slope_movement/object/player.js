@@ -13,6 +13,7 @@ class Player extends Phaser.Physics.Arcade.Image {
 			isTouchingGround: false,
 			lastGroundTouchTime: Date.now(),
 			isJumping: false,
+			isTouchingSlope: false,
 			gravity: {
 				x: 0,
 				y: 0.8
@@ -43,17 +44,17 @@ class Player extends Phaser.Physics.Arcade.Image {
         }
 
 		// Jumping
-		if (cursors.up.isDown && this.data.isTouchingGround) {
-			console.log("jump start", Date.now());
+		const canJump = cursors.up.isDown && this.data.isTouchingGround || this.data.isTouchingSlope
+		if (canJump) {
 			this.data.isJumping = true;
 		}
 
-		if (cursors.up.isDown && this.data.isJumping) {
+		const canJumpAndIsJumping = cursors.up.isDown && this.data.isJumping;
+		if (canJumpAndIsJumping) {
 			this.data.velocity.y += -this.data.acceleration.y;
 		}
 
 		if (this.data.isJumping && this.data.lastGroundTouchTime + 110 < Date.now()) {
-			console.log("jump end", Date.now());
 			this.data.isJumping = false;
 		} 
 
@@ -64,10 +65,13 @@ class Player extends Phaser.Physics.Arcade.Image {
 		this.data.velocity.y = this.data.velocity.y * this.data.friction.y;
 
 		// Apply gravity
-		this.data.velocity.y += this.data.gravity.y;
+		if (!this.data.isTouchingSlope) {
+			this.data.velocity.y += this.data.gravity.y;
+		}
 
 		// Check collision
 		this.data.isTouchingGround = false;
+		this.data.isTouchingSlope = false;
 		this.scene.children.each((obj) => {
 			if (obj.name == "wall") {
 				let r1h = {
@@ -98,7 +102,7 @@ class Player extends Phaser.Physics.Arcade.Image {
 				};
 
 				// Horizontal collision
-				if (rectangle_to_rectangle(r1h, r2)) {
+				if (!this.data.isTouchingSlope && rectangle_to_rectangle(r1h, r2)) {
 					this.data.velocity.x = 0;
 				}
 
@@ -113,7 +117,34 @@ class Player extends Phaser.Physics.Arcade.Image {
 					this.data.lastGroundTouchTime = Date.now();
 				}
 			};
+
+			if (obj.name === "slope") {
+				
+
+				let r2 = {
+					x: obj.x,
+					y: obj.y,
+					w: obj.width,
+					h: obj.height
+				};
+
+				let r1 = {
+					x: this.x,
+					y: this.y,
+					w: this.width,
+					h: this.height,
+				};
+
+				// Rectangle collision for slop
+				if (!canJumpAndIsJumping && rectangle_to_rectangle(r1, r2)) {
+					// Snap player to slope line
+					const depthFromLeft = r1.x + r1.w - r2.x;
+					this.y = r2.y - depthFromLeft;
+					this.data.isTouchingSlope = true;
+				}
+			}
 		});
+		console.log("----------------");
 
 		// Limit speed
 		this.data.velocity.x = clamp(this.data.velocity.x, -5, 5);
