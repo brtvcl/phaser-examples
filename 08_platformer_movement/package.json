@@ -1,0 +1,16 @@
+{
+  "name": "08_platformer_movement",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.8.0"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
+  }
+}
