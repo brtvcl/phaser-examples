@@ -31,7 +31,7 @@ const PHASER_LOGO_KEY = 'phaser-logo';
 function create() {
 
     // The player and its settings
-    player = this.add.sprite(100, 450, "box").setOrigin(0);
+    player = this.add.sprite(100, 450, "box");
 
     // logo 
     logo = this.add.sprite(200, 250, "phaser-logo");
@@ -64,7 +64,7 @@ function create() {
 
     reveal.mask = new Phaser.Display.Masks.BitmapMask(this, maskImage)
 
-    this.light = this.add.circle(200, 250, 3, 0x000000, 1)
+    this.light = this.add.circle(0, 0, 50, 0x000000, 1)
     this.light.visible = false
 
     this.renderTexture = rt
@@ -96,13 +96,14 @@ function update() {
         v_speed *= 0.95;
     }
 
-
     player.x += h_speed;
     player.y += v_speed;
 
+    const lightX = player.x - this.cover.x + this.cover.width * 0.5
+    const lightY = player.y - this.cover.y + this.cover.height * 0.5
 
     this.renderTexture.clear()
-    this.renderTexture.draw(this.light, player.x, player.y)
+    this.renderTexture.draw(this.light, lightX, lightY)
 
 }
 
