@@ -28,6 +28,7 @@ function preload() {
     this.load.image("box", "./assets/box.png");
 }
 const PHASER_LOGO_KEY = 'phaser-logo';
+
 function create() {
 
     // The player and its settings
@@ -42,7 +43,7 @@ function create() {
     const y = 250;
     const reveal = this.add.image(x, y, PHASER_LOGO_KEY)
     this.cover = this.add.image(x, y, PHASER_LOGO_KEY)
-    this.cover.setTint(0x004c99)
+    this.cover.setTint(0x002c55)
 
     const width = this.cover.width
     const height = this.cover.height
@@ -64,14 +65,19 @@ function create() {
 
     reveal.mask = new Phaser.Display.Masks.BitmapMask(this, maskImage)
 
-    this.light = this.add.circle(0, 0, 50, 0x000000, 1)
+
+    
+    // this.light = this.add.circle(0, 0, 50, 0x000000, 1)  
+    this.light = this.add.polygon(0, 0, [[0,0],[0,0],[0,0]], 0x000000, 1);
     this.light.visible = false
 
     this.renderTexture = rt
 
+
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
+    console.log(this.light.geom);
 }
 
 function update() {
@@ -99,11 +105,23 @@ function update() {
     player.x += h_speed;
     player.y += v_speed;
 
-    const lightX = player.x - this.cover.x + this.cover.width * 0.5
-    const lightY = player.y - this.cover.y + this.cover.height * 0.5
+    const lightX = player.x - this.cover.x + this.cover.width * 0.5;
+    const lightY = player.y - this.cover.y + this.cover.height * 0.5;
 
-    this.renderTexture.clear()
-    this.renderTexture.draw(this.light, lightX, lightY)
+    this.renderTexture.clear();
+    this.renderTexture.draw(this.light, lightX, lightY);
+
+
+    const angleToMouse = (Phaser.Math.Angle.Between(player.x, player.y, this.game.input.mousePointer.x, this.game.input.mousePointer.y));
+    const lightStrength = 200;
+    const lightSpread = 0.25;
+
+    this.light.geom.points[1].x = (lightStrength * Math.cos(angleToMouse-lightSpread));
+    this.light.geom.points[1].y = (lightStrength * Math.sin(angleToMouse-lightSpread));
+
+    this.light.geom.points[2].x = (lightStrength * Math.cos(angleToMouse+lightSpread));
+    this.light.geom.points[2].y = (lightStrength * Math.sin(angleToMouse+lightSpread));
+    this.light.updateData();
 
 }
 
