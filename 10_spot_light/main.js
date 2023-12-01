@@ -31,12 +31,13 @@ const PHASER_LOGO_KEY = 'phaser-logo';
 
 function create() {
 
-    // The player and its settings
-    player = this.add.sprite(100, 450, "box");
+    
 
     // logo 
     logo = this.add.sprite(200, 250, "phaser-logo");
 
+
+    
 
     // Lighting
     const x = 200;
@@ -59,6 +60,9 @@ function create() {
         key: rt.texture.key,
         add: false
     })
+
+    // The player and its settings
+    player = this.add.sprite(100, 450, "box");
 
     this.cover.mask = new Phaser.Display.Masks.BitmapMask(this, maskImage)
     this.cover.mask.invertAlpha = true
