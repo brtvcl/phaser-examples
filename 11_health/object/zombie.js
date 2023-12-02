@@ -36,13 +36,17 @@ class Zombie extends Phaser.Physics.Arcade.Image {
         // Angle between rigth
         const angleToRight = (angleToPlayer < 180 ? angleToPlayer : ( 180 + ( 180 - angleToPlayer )));
 
-        const angleToUp =  (angleToPlayer-90)%180;
+        const angleToUp =  angleToPlayer === 270 ? 180 : (Math.abs((angleToPlayer + 90) % 360 - 180) % 180);
 
-        console.log({angleToRight, angleToUp});
-        // console.log({
-        //     x: scaleValue(0, 180, 1, -1, angleToRight),
-        //     y: scaleValue(0, 180, 1, -1, angleToUp),
-        // });
+
+        const hMove =  scaleValue(0, 180, 1, -1, angleToRight);
+        const vMove =  scaleValue(0, 180, -1, 1, angleToUp);
+
+        const speed = 1;
+
+        this.x += hMove * speed;
+        this.y += vMove * speed;
+        
 
     }
 
