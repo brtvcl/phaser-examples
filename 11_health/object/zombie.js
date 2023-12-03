@@ -3,6 +3,8 @@ import Player from "./player.js";
 import distance_to_point from "../helper/distance_to_point.js";
 import { lerp } from "../helper/lerp.js";
 import { scaleValue } from "../helper/scaleValue.js";
+import Phaser from "phaser";
+import { Bullet } from "./bullet.js";
 
 class Zombie extends Phaser.Physics.Arcade.Image {
     
@@ -11,6 +13,12 @@ class Zombie extends Phaser.Physics.Arcade.Image {
         super(scene, x, y, "zombie");
         scene.add.existing(this)
         scene.physics.add.existing(this);
+
+        // Add hp
+        this.hp = 5;
+        this.hpBar = new Phaser.GameObjects.Text(scene, x, y-40, this.hp);
+
+        scene.add.existing(this.hpBar);
     }
 
 
@@ -22,13 +30,12 @@ class Zombie extends Phaser.Physics.Arcade.Image {
             
             return false;
         });
+
+        // Make hpbar follow zombie
+        this.hpBar.x = this.x;
+        this.hpBar.y = this.y - 40;
+        this.hpBar.text = this.hp;
         
-        const distanceToPlayer = distance_to_point(this.x, this.y, player.x, player.y);
-
-        if (distanceToPlayer < 32) {
-            console.log("dead");
-        }
-
 
         // Move towards player
         const angleToPlayer =  Phaser.Math.Wrap((Math.atan2(this.y - player.y, this.x - player.x) * 180 / Math.PI + 180) * -1, 0, 360); 
@@ -47,7 +54,22 @@ class Zombie extends Phaser.Physics.Arcade.Image {
         this.x += hMove * speed;
         this.y += vMove * speed;
         
+        // Get damage from bullet
+        this.scene.children.list.forEach((child) => {
+            if (child instanceof Bullet)  {
+                const distanceToBullet = distance_to_point(this.x, this.y, child.x, child.y);
+                if (distanceToBullet < 32) {
+                    child.destroy();
+                    this.hp--;
+                }
+            }
+        });
 
+        // Die from 0 hp
+        if (this.hp <= 0) {
+            this.hpBar.destroy();
+            this.destroy();
+        }
     }
 
 }
