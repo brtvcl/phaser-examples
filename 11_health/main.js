@@ -35,11 +35,26 @@ function preload () {
 function create () {
 
 	let player = new Player(this, 350, 300);
-	new Zombie(this, 150, 300);
+
+
+	this.triggerTimer = this.time.addEvent({
+		callback: () => {
+			const centerX = this.cameras.main.centerX;
+			const centerY = this.cameras.main.centerY;
+			const spawnRangeFromCenter = 300; 
+
+			const randomBetween = (min, max) => {
+				return (Math.random() * (max - min + 1) + min)
+			}
+
+			const spawnX = centerX + spawnRangeFromCenter * Math.cos(randomBetween(-3, 3));
+			const spawnY = centerY + spawnRangeFromCenter * Math.sin(randomBetween(-3, 3));
+			
+			new Zombie(this, spawnX, spawnY);
+		},
+		callbackScope: this,
+		delay: 1000, // 1000 = 1 second
+		loop: true
+	});
 
 }
-
-function update () {
-	//Logic in player.js
-}
-
