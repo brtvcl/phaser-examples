@@ -16,7 +16,7 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.v_speed = 0;
 
         scene.input.on('pointerdown', (pointer) => {    
-            new Bullet(scene, this.x, this.y, pointer.x, pointer.y);
+            new Bullet(scene, this.x, this.y, pointer.x, pointer.y, 5);
         });
     }
 
