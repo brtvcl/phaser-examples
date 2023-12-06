@@ -2,6 +2,13 @@ import clamp from "../helper/clamp.js";
 import { Bullet } from "./bullet.js";
 import Zombie from "./zombie.js";
 import distance_to_point from "../helper/distance_to_point.js";
+import { randomFloat } from "../helper/randomFloat.js";
+
+const PRIMARY_WEAPONS = {
+    AR: "AR", // M4A1
+    AK47: "AK47", // Kalashnikov
+    M4: "M4" // Shotgun
+};
 
 class Player extends Phaser.Physics.Arcade.Image {
     
@@ -14,9 +21,41 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.cursors =scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D' });
         this.h_speed = 0;
         this.v_speed = 0;
+        this.primaryWeapon = PRIMARY_WEAPONS.M4,
 
         scene.input.on('pointerdown', (pointer) => {    
-            new Bullet(scene, this.x, this.y, pointer.x, pointer.y, 5);
+            switch (this.primaryWeapon) {
+                case PRIMARY_WEAPONS.AR:
+                    new Bullet(scene, {
+                        x: this.x, 
+                        y: this.y, 
+                        targetX: pointer.x, 
+                        targetY: pointer.y, 
+                        spread: 5,
+                    });
+                    break;
+                case PRIMARY_WEAPONS.AK47:
+                    new Bullet(scene, {
+                        x: this.x, 
+                        y: this.y, 
+                        targetX: pointer.x, 
+                        targetY: pointer.y, 
+                        spread: 7
+                    });
+                    break;
+                case PRIMARY_WEAPONS.M4:
+                    for (let i = 0; i < 9; i++) {
+                        new Bullet(scene, {
+                            x: this.x, 
+                            y: this.y, 
+                            targetX: pointer.x, 
+                            targetY: pointer.y, 
+                            spread: 12,
+                            speed: randomFloat(12, 17)
+                        });
+                    }
+            }
+            
         });
     }
 

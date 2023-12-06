@@ -1,13 +1,23 @@
 import { scaleValue } from "../helper/scaleValue";
 import { randomInt } from "../helper/randomInt";
+
+const BULLET_DEFAULTS = {
+    speed: 20,
+    damage: 1,
+};
+
 class Bullet extends Phaser.GameObjects.Rectangle {
     
 
-    constructor (scene, x, y, targetX, targetY, spread) {
+    constructor (scene, {x, y, targetX, targetY, spread, damage, speed}) {
         super(scene, x, y, 10, 2, 0xffff00, 1);
 
 
         scene.add.existing(this);
+
+        // Bullet config
+        this.damage = damage || BULLET_DEFAULTS.damage;
+        this.speed = speed || BULLET_DEFAULTS.speed;
 
 
         // Move towards target
@@ -33,10 +43,9 @@ class Bullet extends Phaser.GameObjects.Rectangle {
         const hMove =  scaleValue(0, 180, 1, -1, this.angleToRight);
         const vMove =  scaleValue(0, 180, -1, 1, this.angleToUp);
 
-        const speed = 15;
 
-        this.x += hMove * speed;
-        this.y += vMove * speed;
+        this.x += hMove * this.speed;
+        this.y += vMove * this.speed;
     }
 
 }
