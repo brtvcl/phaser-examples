@@ -1,10 +1,9 @@
-import clamp from "../helper/clamp.js";
 import Player from "./player.js";
 import distance_to_point from "../helper/distance_to_point.js";
-import { lerp } from "../helper/lerp.js";
 import { scaleValue } from "../helper/scaleValue.js";
 import Phaser from "phaser";
 import { Bullet } from "./bullet.js";
+import { randomInt } from "../helper/randomInt.js";
 
 class Zombie extends Phaser.Physics.Arcade.Image {
     
@@ -15,7 +14,7 @@ class Zombie extends Phaser.Physics.Arcade.Image {
         scene.physics.add.existing(this);
 
         // Add hp
-        this.hp = 5;
+        this.hp = randomInt(5, 10);
         this.hpBar = new Phaser.GameObjects.Text(scene, x, y-40, this.hp);
 
         scene.add.existing(this.hpBar);
@@ -60,7 +59,7 @@ class Zombie extends Phaser.Physics.Arcade.Image {
                 const distanceToBullet = distance_to_point(this.x, this.y, child.x, child.y);
                 if (distanceToBullet < 32) {
                     child.destroy();
-                    this.hp--;
+                    this.hp -= child.damage;
                 }
             }
         });

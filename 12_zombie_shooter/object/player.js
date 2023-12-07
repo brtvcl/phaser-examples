@@ -32,6 +32,7 @@ class Player extends Phaser.Physics.Arcade.Image {
                         targetX: pointer.x, 
                         targetY: pointer.y, 
                         spread: 5,
+                        damage: 5
                     });
                     break;
                 case PRIMARY_WEAPONS.AK47:
@@ -40,7 +41,8 @@ class Player extends Phaser.Physics.Arcade.Image {
                         y: this.y, 
                         targetX: pointer.x, 
                         targetY: pointer.y, 
-                        spread: 7
+                        spread: 7,
+                        damage: 7
                     });
                     break;
                 case PRIMARY_WEAPONS.M4:
