@@ -19,7 +19,7 @@ class Player extends Phaser.Physics.Arcade.Image {
         scene.add.existing(this)
         scene.physics.add.existing(this);
         this.player_acceleration = 20;
-        this.cursors = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D' });
+        this.input = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D', interact: "E" });
         this.h_speed = 0;
         this.v_speed = 0;
         this.primaryWeapon = PRIMARY_WEAPONS.M4,
@@ -63,8 +63,8 @@ class Player extends Phaser.Physics.Arcade.Image {
     }
 
     preUpdate(time, delta) {
-        let h_move = this.cursors.right.isDown - this.cursors.left.isDown;
-        let v_move = this.cursors.down.isDown - this.cursors.up.isDown;
+        let h_move = this.input.right.isDown - this.input.left.isDown;
+        let v_move = this.input.down.isDown - this.input.up.isDown;
 
         this.h_speed += h_move * this.player_acceleration;
         this.h_speed = clamp(this.h_speed, -200, 200);
@@ -110,8 +110,13 @@ class Player extends Phaser.Physics.Arcade.Image {
             // Pickup item on touch
             if (child instanceof Item) {
                 const distanceToZombie = distance_to_point(this.x, this.y, child.x, child.y);
-                if (distanceToZombie < 32) {
+                if (distanceToZombie < 32 && Phaser.Input.Keyboard.JustDown(this.input.interact)) {
+                    if (this.primaryWeapon) {
+                        new Item({ x: this.x, y: this.y + 32, type: this.primaryWeapon }, this.scene);
+                    }
                     this.primaryWeapon = child.type;
+                    child.destroy();
+
                 }
             }
 
