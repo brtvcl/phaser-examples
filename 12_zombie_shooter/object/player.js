@@ -11,6 +11,18 @@ const PRIMARY_WEAPONS = {
     M4: "M4" // Shotgun
 };
 
+const PRIMARY_WEAPONS_CONFIG = {
+    AR: {
+        fireRate: 15,
+    },
+    AK: {
+        fireRate: 12,
+    },
+    M4: {
+        fireRate: 1,
+    }
+}
+
 class Player extends Phaser.Physics.Arcade.Image {
 
 
@@ -22,44 +34,10 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.input = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D', interact: "E" });
         this.h_speed = 0;
         this.v_speed = 0;
-        this.primaryWeapon = PRIMARY_WEAPONS.M4,
+        this.primaryWeapon = PRIMARY_WEAPONS.M4;
+        this.canShoot = true;
 
-            scene.input.on('pointerdown', (pointer) => {
-                switch (this.primaryWeapon) {
-                    case PRIMARY_WEAPONS.AR:
-                        new Bullet(scene, {
-                            x: this.x,
-                            y: this.y,
-                            targetX: pointer.x,
-                            targetY: pointer.y,
-                            spread: 5,
-                            damage: 5
-                        });
-                        break;
-                    case PRIMARY_WEAPONS.AK:
-                        new Bullet(scene, {
-                            x: this.x,
-                            y: this.y,
-                            targetX: pointer.x,
-                            targetY: pointer.y,
-                            spread: 7,
-                            damage: 7
-                        });
-                        break;
-                    case PRIMARY_WEAPONS.M4:
-                        for (let i = 0; i < 9; i++) {
-                            new Bullet(scene, {
-                                x: this.x,
-                                y: this.y,
-                                targetX: pointer.x,
-                                targetY: pointer.y,
-                                spread: 12,
-                                speed: randomFloat(12, 17)
-                            });
-                        }
-                }
-
-            });
+            
     }
 
     preUpdate(time, delta) {
@@ -121,6 +99,53 @@ class Player extends Phaser.Physics.Arcade.Image {
             }
 
         });
+
+
+        
+        // Primary Weapon shooting logic
+        const pointer = this.scene.input.activePointer;
+        let canShoot = this.canShoot; //time > this.nextShotTime;
+        if (canShoot && pointer.isDown && this.primaryWeapon) {
+            this.canShoot = false;
+            setTimeout(() => {
+                this.canShoot = true;
+            }, 1000 / PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].fireRate);
+            switch (this.primaryWeapon) {
+                case PRIMARY_WEAPONS.AR:
+                    
+                    new Bullet(this.scene, {
+                        x: this.x,
+                        y: this.y,
+                        targetX: pointer.x,
+                        targetY: pointer.y,
+                        spread: 5,
+                        damage: 5
+                    });
+                    break;
+                case PRIMARY_WEAPONS.AK:
+                    new Bullet(this.scene, {
+                        x: this.x,
+                        y: this.y,
+                        targetX: pointer.x,
+                        targetY: pointer.y,
+                        spread: 7,
+                        damage: 7
+                    });
+                    break;
+                case PRIMARY_WEAPONS.M4:
+                    for (let i = 0; i < 9; i++) {
+                        new Bullet(this.scene, {
+                            x: this.x,
+                            y: this.y,
+                            targetX: pointer.x,
+                            targetY: pointer.y,
+                            spread: 12,
+                            speed: randomFloat(12, 17)
+                        });
+                    }
+            }
+
+        }
 
 
 
