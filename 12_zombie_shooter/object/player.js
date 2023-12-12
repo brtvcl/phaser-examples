@@ -11,26 +11,31 @@ const PRIMARY_WEAPONS = {
     M4: "M4" // Shotgun
 };
 
-const PRIMARY_WEAPONS_CONFIG = {
-    AR: {
-        fireRate: 15,
-        magazineCapacity: 25,
-    },
-    AK: {
-        fireRate: 12,
-        magazineCapacity: 30,
-    },
-    M4: {
-        fireRate: 1,
-        magazineCapacity: 5,
-    }
-};
-
 const AMMO_TYPES = {
     HEAVY: "HEAVY",
     LIGHT: "LIGHT",
     SHOTGUN: "SHOTGUN",
 }
+
+const PRIMARY_WEAPONS_CONFIG = {
+    AR: {
+        fireRate: 15,
+        magazineCapacity: 25,
+        ammo: AMMO_TYPES.LIGHT,
+    },
+    AK: {
+        fireRate: 12,
+        magazineCapacity: 30,
+        ammo: AMMO_TYPES.HEAVY,
+    },
+    M4: {
+        fireRate: 1,
+        magazineCapacity: 5,
+        ammo: AMMO_TYPES.SHOTGUN
+    }
+};
+
+
 
 class Player extends Phaser.Physics.Arcade.Image {
 
@@ -100,16 +105,41 @@ class Player extends Phaser.Physics.Arcade.Image {
                 }
             }
 
+            const ammoTypeItemMap = {
+                HEAVY: "HEAVY_AMMO",
+                LIGHT: "LIGHT_AMMO",
+                SHOTGUN: "SHOTGUN_AMMO"
+            };
+
             // Pickup item on touch
             if (child instanceof Item) {
-                const distanceToZombie = distance_to_point(this.x, this.y, child.x, child.y);
-                if (distanceToZombie < 32 && Phaser.Input.Keyboard.JustDown(this.input.interact)) {
+                const distanceToItem = distance_to_point(this.x, this.y, child.x, child.y);
+
+                // Pickup weapons
+                if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(this.input.interact)) {
                     if (this.primaryWeapon) {
+                        // Drop weapon
                         new Item({ x: this.x, y: this.y + 32, type: this.primaryWeapon }, this.scene);
+
+                        // Drop ammo
+                        if (this.ammo > 0) {
+                            const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].ammo];
+                            new Item({ x: this.x, y: this.y + 48, type: ammoType, meta: this.ammo }, this.scene);
+                            this.ammo = 0;
+                        }
+
                     }
+
                     this.primaryWeapon = child.type;
                     child.destroy();
 
+                }
+
+                // Pickup ammo
+                const weaponAmmo = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
+                if (weaponAmmo == child.type && distanceToItem < 32) {
+                    this.ammo += child.meta;
+                    child.destroy();
                 }
             }
 

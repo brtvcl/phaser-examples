@@ -6,13 +6,16 @@ import { randomFloat } from "../helper/randomFloat.js";
 
 class Item extends Phaser.GameObjects.Image {
 
+	/**
+	 * @typedef {"M4"|"AR"|"AK"|"HEAVY_AMMO"|"LIGHT_AMMO"|"SHOTGUN_AMMO"} type
+	 */
 
 	/**
 	 * 
 	 * @param {{
 	 * x:number,
 	 * y:number,
-	 * type: "M4" | "AR" | "AK"
+	 * type: type
 	 * }} param0 
 	 * @param {*} scene 
 	 */
@@ -20,20 +23,25 @@ class Item extends Phaser.GameObjects.Image {
 		{
 			x,
 			y,
-			type
+			type,
+			meta,
 		},
 		scene
 	) {
 		const typeSpriteMap = {
 			M4: "m4",
 			AR: "ar",
-			AK: "ak"
+			AK: "ak",
+			HEAVY_AMMO: "heavy_ammo",
+			LIGHT_AMMO: "light_ammo",
+			SHOTGUN_AMMO: "shotgun_ammo"
 		};
 
 		super(scene, x, y, typeSpriteMap[type]);
 		scene.add.existing(this);
 
 		this.type = type;
+		this.meta = meta;
 
 	}
 

@@ -4,6 +4,7 @@ import phaser from "phaser";
 import Player from "./object/player.js";
 import Zombie from "./object/zombie";
 import Item from "./object/item";
+import { randomInt } from "./helper/randomInt";
 
 var config = {
 	type: Phaser.AUTO,
@@ -35,6 +36,9 @@ function preload() {
 	this.load.image("m4", "./asset/m4.png");
 	this.load.image("ar", "./asset/ar.png");
 	this.load.image("ak", "./asset/ak.png");
+	this.load.image("heavy_ammo", "./asset/heavy_ammo.png");
+	this.load.image("light_ammo", "./asset/light_ammo.png");
+	this.load.image("shotgun_ammo", "./asset/shotgun_ammo.png");
 }
 
 function create() {
@@ -77,6 +81,28 @@ function create() {
 		x: 450,
 		y: 450,
 	}, this);
+
+	for (let i = 0; i < 5; i++) {
+		new Item({
+			x: randomInt(100, 700),
+			y: randomInt(100, 500),
+			type: "HEAVY_AMMO",
+			meta: randomInt(10,40)
+		}, this);
+		new Item({
+			x: randomInt(100, 700),
+			y: randomInt(100, 500),
+			type: "LIGHT_AMMO",
+			meta: randomInt(10,40)
+		}, this)
+		new Item({
+			x: randomInt(100, 700),
+			y: randomInt(100, 500),
+			type: "SHOTGUN_AMMO",
+			meta: randomInt(5,10)
+		}, this)
+
+	}
 
 }
 
