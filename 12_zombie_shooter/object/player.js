@@ -54,7 +54,7 @@ class Player extends Phaser.Physics.Arcade.Image {
 
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);
-            
+
     }
 
     preUpdate(time, delta) {
@@ -122,7 +122,9 @@ class Player extends Phaser.Physics.Arcade.Image {
                         new Item({ x: this.x, y: this.y + 32, type: this.primaryWeapon }, this.scene);
 
                         // Drop ammo
-                        if (this.ammo > 0) {
+                        const currentAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
+                        const pickedUpAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[child.type]?.ammo];
+                        if (currentAmmoType !== pickedUpAmmoType && this.ammo > 0) {
                             const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].ammo];
                             new Item({ x: this.x, y: this.y + 48, type: ammoType, meta: this.ammo }, this.scene);
                             this.ammo = 0;
@@ -146,7 +148,7 @@ class Player extends Phaser.Physics.Arcade.Image {
         });
 
 
-        
+
         // Primary Weapon shooting logic
         const pointer = this.scene.input.activePointer;
         let canShoot = this.canShoot; //time > this.nextShotTime;
@@ -158,7 +160,7 @@ class Player extends Phaser.Physics.Arcade.Image {
             }, 1000 / PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].fireRate);
             switch (this.primaryWeapon) {
                 case PRIMARY_WEAPONS.AR:
-                    
+
                     new Bullet(this.scene, {
                         x: this.x,
                         y: this.y,
