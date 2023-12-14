@@ -35,6 +35,11 @@ const PRIMARY_WEAPONS_CONFIG = {
     }
 };
 
+const ammoTypeItemMap = {
+    HEAVY: "HEAVY_AMMO",
+    LIGHT: "LIGHT_AMMO",
+    SHOTGUN: "SHOTGUN_AMMO"
+};
 
 
 class Player extends Phaser.Physics.Arcade.Image {
@@ -45,12 +50,13 @@ class Player extends Phaser.Physics.Arcade.Image {
         scene.add.existing(this)
         scene.physics.add.existing(this);
         this.player_acceleration = 20;
-        this.input = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D', interact: "E" });
+        this.input = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D', interact: "E", reload: "R" });
         this.h_speed = 0;
         this.v_speed = 0;
         this.primaryWeapon = PRIMARY_WEAPONS.M4;
         this.canShoot = true;
         this.ammo = 16;
+        this.loadedAmmo = 3;
 
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);
@@ -59,7 +65,7 @@ class Player extends Phaser.Physics.Arcade.Image {
 
     preUpdate(time, delta) {
         // Update UI
-        this.ammoText.text = this.ammo;
+        this.ammoText.text = `${this.loadedAmmo} / ${this.ammo}`;
 
         let h_move = this.input.right.isDown - this.input.left.isDown;
         let v_move = this.input.down.isDown - this.input.up.isDown;
@@ -93,6 +99,63 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.setVelocityX(this.h_speed);
         this.setVelocityY(this.v_speed);
 
+        const currentWeapon = PRIMARY_WEAPONS_CONFIG[this.primaryWeapon];
+        const pointer = this.scene.input.activePointer;
+
+        // Reload logic
+        const hasSpaceInMagazine = this.loadedAmmo < currentWeapon.magazineCapacity;
+        const reloadClicked = Phaser.Input.Keyboard.JustDown(this.input.reload);
+        if (hasSpaceInMagazine && reloadClicked) {
+            // Reload logic by ammo type
+            switch (currentWeapon.ammo) {
+                case "SHOTGUN":
+                    // In shothun ammo type we set interval for 500ms second to load 1 round at a time 
+                    // When reloaded fully or round fired we stop interval
+                    const reloadInterval = setInterval(() => {
+                        const roundsToLoad = Math.min(1, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
+                        if (roundsToLoad < 1) {
+                            clearInterval(reloadInterval);
+                        }
+                        this.loadedAmmo += roundsToLoad;
+                        this.ammo -= roundsToLoad;
+
+                        const cannotReloadMore = Math.min(1, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo) < 1;
+
+                        if (cannotReloadMore) {
+                            clearInterval(reloadInterval);
+                        }
+                    }, 500);
+
+                    if (pointer.isDown) {
+                        clearInterval(reloadInterval);
+                    }
+
+                    break;
+                case "HEAVY":
+                    // In heavy ammo type we wait for 1.5 second to load the magazine and we fully reload 
+                    this.canShoot = false;
+                    setTimeout(() => {
+                        this.canShoot = true;
+                        const roundsToLoad = Math.min(currentWeapon.magazineCapacity, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
+                        this.loadedAmmo += roundsToLoad;
+                        this.ammo -= roundsToLoad;
+                    }, 1500)
+                    break;
+                case "LIGHT":
+                    // In light ammo type we wait for 1.2 second to load the magazine and we fully reload 
+                    this.canShoot = false;
+                    setTimeout(() => {
+                        this.canShoot = true;
+                        const roundsToLoad = Math.min(currentWeapon.magazineCapacity, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
+                        this.loadedAmmo += roundsToLoad;
+                        this.ammo -= roundsToLoad;
+                    }, 1200)
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         this.scene.children.list.forEach((child) => {
             // Die from zombie touch
@@ -105,16 +168,13 @@ class Player extends Phaser.Physics.Arcade.Image {
                 }
             }
 
-            const ammoTypeItemMap = {
-                HEAVY: "HEAVY_AMMO",
-                LIGHT: "LIGHT_AMMO",
-                SHOTGUN: "SHOTGUN_AMMO"
-            };
+            
 
             // Pickup item on touch
             if (child instanceof Item) {
                 const distanceToItem = distance_to_point(this.x, this.y, child.x, child.y);
 
+                const currentAmmoItemType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
                 // Pickup weapons
                 if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(this.input.interact)) {
                     if (this.primaryWeapon) {
@@ -122,9 +182,8 @@ class Player extends Phaser.Physics.Arcade.Image {
                         new Item({ x: this.x, y: this.y + 32, type: this.primaryWeapon }, this.scene);
 
                         // Drop ammo
-                        const currentAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
                         const pickedUpAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[child.type]?.ammo];
-                        if (currentAmmoType !== pickedUpAmmoType && this.ammo > 0) {
+                        if (currentAmmoItemType !== pickedUpAmmoType && this.ammo > 0) {
                             const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].ammo];
                             new Item({ x: this.x, y: this.y + 48, type: ammoType, meta: this.ammo }, this.scene);
                             this.ammo = 0;
@@ -138,8 +197,7 @@ class Player extends Phaser.Physics.Arcade.Image {
                 }
 
                 // Pickup ammo
-                const weaponAmmo = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
-                if (weaponAmmo == child.type && distanceToItem < 32) {
+                if (currentAmmoItemType == child.type && distanceToItem < 32) {
                     this.ammo += child.meta;
                     child.destroy();
                 }
@@ -150,14 +208,14 @@ class Player extends Phaser.Physics.Arcade.Image {
 
 
         // Primary Weapon shooting logic
-        const pointer = this.scene.input.activePointer;
-        let canShoot = this.canShoot; //time > this.nextShotTime;
-        if (canShoot && pointer.isDown && this.primaryWeapon && this.ammo > 0) {
+        if (this.canShoot && pointer.isDown && this.primaryWeapon && this.loadedAmmo > 0) {
             this.canShoot = false;
-            this.ammo--;
+            this.loadedAmmo--;
+
+            const currentWeaponFireRate = PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].fireRate;
             setTimeout(() => {
                 this.canShoot = true;
-            }, 1000 / PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].fireRate);
+            }, 1000 / currentWeaponFireRate);
             switch (this.primaryWeapon) {
                 case PRIMARY_WEAPONS.AR:
 
