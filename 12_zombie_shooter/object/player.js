@@ -4,42 +4,8 @@ import Zombie from "./zombie.js";
 import distance_to_point from "../helper/distance_to_point.js";
 import { randomFloat } from "../helper/randomFloat.js";
 import Item from "./item.js";
+import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap } from "../constants.js";
 
-const PRIMARY_WEAPONS = {
-    AR: "AR", // M4A1
-    AK: "AK", // Kalashnikov
-    M4: "M4" // Shotgun
-};
-
-const AMMO_TYPES = {
-    HEAVY: "HEAVY",
-    LIGHT: "LIGHT",
-    SHOTGUN: "SHOTGUN",
-}
-
-const PRIMARY_WEAPONS_CONFIG = {
-    AR: {
-        fireRate: 15,
-        magazineCapacity: 25,
-        ammo: AMMO_TYPES.LIGHT,
-    },
-    AK: {
-        fireRate: 12,
-        magazineCapacity: 30,
-        ammo: AMMO_TYPES.HEAVY,
-    },
-    M4: {
-        fireRate: 1,
-        magazineCapacity: 5,
-        ammo: AMMO_TYPES.SHOTGUN
-    }
-};
-
-const ammoTypeItemMap = {
-    HEAVY: "HEAVY_AMMO",
-    LIGHT: "LIGHT_AMMO",
-    SHOTGUN: "SHOTGUN_AMMO"
-};
 
 
 class Player extends Phaser.Physics.Arcade.Image {
@@ -206,7 +172,6 @@ class Player extends Phaser.Physics.Arcade.Image {
         });
 
 
-
         // Primary Weapon shooting logic
         if (this.canShoot && pointer.isDown && this.primaryWeapon && this.loadedAmmo > 0) {
             this.canShoot = false;
@@ -252,8 +217,6 @@ class Player extends Phaser.Physics.Arcade.Image {
             }
 
         }
-
-
 
     }
 
