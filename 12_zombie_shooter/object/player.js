@@ -5,6 +5,7 @@ import distance_to_point from "../helper/distance_to_point.js";
 import { randomFloat } from "../helper/randomFloat.js";
 import Item from "./item.js";
 import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap } from "../constants.js";
+import { fireWeapon } from "../scripts/fireWeapon.js";
 
 
 
@@ -173,50 +174,7 @@ class Player extends Phaser.Physics.Arcade.Image {
 
 
         // Primary Weapon shooting logic
-        if (this.canShoot && pointer.isDown && this.primaryWeapon && this.loadedAmmo > 0) {
-            this.canShoot = false;
-            this.loadedAmmo--;
-
-            const currentWeaponFireRate = PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].fireRate;
-            setTimeout(() => {
-                this.canShoot = true;
-            }, 1000 / currentWeaponFireRate);
-            switch (this.primaryWeapon) {
-                case PRIMARY_WEAPONS.AR:
-
-                    new Bullet(this.scene, {
-                        x: this.x,
-                        y: this.y,
-                        targetX: pointer.x,
-                        targetY: pointer.y,
-                        spread: 5,
-                        damage: 5
-                    });
-                    break;
-                case PRIMARY_WEAPONS.AK:
-                    new Bullet(this.scene, {
-                        x: this.x,
-                        y: this.y,
-                        targetX: pointer.x,
-                        targetY: pointer.y,
-                        spread: 7,
-                        damage: 7
-                    });
-                    break;
-                case PRIMARY_WEAPONS.M4:
-                    for (let i = 0; i < 9; i++) {
-                        new Bullet(this.scene, {
-                            x: this.x,
-                            y: this.y,
-                            targetX: pointer.x,
-                            targetY: pointer.y,
-                            spread: 12,
-                            speed: randomFloat(12, 17)
-                        });
-                    }
-            }
-
-        }
+        fireWeapon(this);
 
     }
 
