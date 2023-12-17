@@ -6,6 +6,7 @@ import { randomFloat } from "../helper/randomFloat.js";
 import Item from "./item.js";
 import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap } from "../constants.js";
 import { fireWeapon } from "../scripts/fireWeapon.js";
+import { reloadWeapon } from "../scripts/reloadWeapon.js";
 
 
 
@@ -24,7 +25,7 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.canShoot = true;
         this.ammo = 16;
         this.loadedAmmo = 3;
-
+        this.reloadInterval = null;
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);
 
@@ -66,62 +67,11 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.setVelocityX(this.h_speed);
         this.setVelocityY(this.v_speed);
 
-        const currentWeapon = PRIMARY_WEAPONS_CONFIG[this.primaryWeapon];
-        const pointer = this.scene.input.activePointer;
+        
+        
 
         // Reload logic
-        const hasSpaceInMagazine = this.loadedAmmo < currentWeapon.magazineCapacity;
-        const reloadClicked = Phaser.Input.Keyboard.JustDown(this.input.reload);
-        if (hasSpaceInMagazine && reloadClicked) {
-            // Reload logic by ammo type
-            switch (currentWeapon.ammo) {
-                case "SHOTGUN":
-                    // In shothun ammo type we set interval for 500ms second to load 1 round at a time 
-                    // When reloaded fully or round fired we stop interval
-                    const reloadInterval = setInterval(() => {
-                        const roundsToLoad = Math.min(1, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
-                        if (roundsToLoad < 1) {
-                            clearInterval(reloadInterval);
-                        }
-                        this.loadedAmmo += roundsToLoad;
-                        this.ammo -= roundsToLoad;
-
-                        const cannotReloadMore = Math.min(1, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo) < 1;
-
-                        if (cannotReloadMore) {
-                            clearInterval(reloadInterval);
-                        }
-                    }, 500);
-
-                    if (pointer.isDown) {
-                        clearInterval(reloadInterval);
-                    }
-
-                    break;
-                case "HEAVY":
-                    // In heavy ammo type we wait for 1.5 second to load the magazine and we fully reload 
-                    this.canShoot = false;
-                    setTimeout(() => {
-                        this.canShoot = true;
-                        const roundsToLoad = Math.min(currentWeapon.magazineCapacity, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
-                        this.loadedAmmo += roundsToLoad;
-                        this.ammo -= roundsToLoad;
-                    }, 1500)
-                    break;
-                case "LIGHT":
-                    // In light ammo type we wait for 1.2 second to load the magazine and we fully reload 
-                    this.canShoot = false;
-                    setTimeout(() => {
-                        this.canShoot = true;
-                        const roundsToLoad = Math.min(currentWeapon.magazineCapacity, this.ammo, currentWeapon.magazineCapacity - this.loadedAmmo);
-                        this.loadedAmmo += roundsToLoad;
-                        this.ammo -= roundsToLoad;
-                    }, 1200)
-                    break;
-                default:
-                    break;
-            }
-        }
+        reloadWeapon(this);
 
 
         this.scene.children.list.forEach((child) => {
