@@ -7,6 +7,7 @@ import Item from "./item.js";
 import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap } from "../constants.js";
 import { fireWeapon } from "../scripts/fireWeapon.js";
 import { reloadWeapon } from "../scripts/reloadWeapon.js";
+import { pickupItem } from "../scripts/pickupItem.js";
 
 
 
@@ -67,60 +68,15 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.setVelocityX(this.h_speed);
         this.setVelocityY(this.v_speed);
 
-        
-        
+
+
 
         // Reload logic
         reloadWeapon(this);
 
 
-        this.scene.children.list.forEach((child) => {
-            // Die from zombie touch
-            if (child instanceof Zombie) {
-                const distanceToZombie = distance_to_point(this.x, this.y, child.x, child.y);
-                if (distanceToZombie < 32) {
-                    alert("Game over");
-                    window.location.reload();
-                    this.destroy();
-                }
-            }
-
-            
-
-            // Pickup item on touch
-            if (child instanceof Item) {
-                const distanceToItem = distance_to_point(this.x, this.y, child.x, child.y);
-
-                const currentAmmoItemType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon]?.ammo];
-                // Pickup weapons
-                if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(this.input.interact)) {
-                    if (this.primaryWeapon) {
-                        // Drop weapon
-                        new Item({ x: this.x, y: this.y + 32, type: this.primaryWeapon }, this.scene);
-
-                        // Drop ammo
-                        const pickedUpAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[child.type]?.ammo];
-                        if (currentAmmoItemType !== pickedUpAmmoType && this.ammo > 0) {
-                            const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[this.primaryWeapon].ammo];
-                            new Item({ x: this.x, y: this.y + 48, type: ammoType, meta: this.ammo }, this.scene);
-                            this.ammo = 0;
-                        }
-
-                    }
-
-                    this.primaryWeapon = child.type;
-                    child.destroy();
-
-                }
-
-                // Pickup ammo
-                if (currentAmmoItemType == child.type && distanceToItem < 32) {
-                    this.ammo += child.meta;
-                    child.destroy();
-                }
-            }
-
-        });
+        // Pickup item logic
+        pickupItem(this);
 
 
         // Primary Weapon shooting logic
