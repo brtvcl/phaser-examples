@@ -8,6 +8,7 @@ import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap } from "../con
 import { fireWeapon } from "../scripts/fireWeapon.js";
 import { reloadWeapon } from "../scripts/reloadWeapon.js";
 import { pickupItem } from "../scripts/pickupItem.js";
+import { playerMovement } from "../scripts/playerMovement.js";
 
 
 
@@ -36,48 +37,14 @@ class Player extends Phaser.Physics.Arcade.Image {
         // Update UI
         this.ammoText.text = `${this.loadedAmmo} / ${this.ammo}`;
 
-        let h_move = this.input.right.isDown - this.input.left.isDown;
-        let v_move = this.input.down.isDown - this.input.up.isDown;
-
-        this.h_speed += h_move * this.player_acceleration;
-        this.h_speed = clamp(this.h_speed, -200, 200);
-        this.v_speed += v_move * this.player_acceleration;
-        this.v_speed = clamp(this.v_speed, -200, 200);
-
-
-
-        if (h_move == 0) {
-            if (Math.abs(this.h_speed) < 5) {
-                this.h_speed = 0;
-            }
-            else {
-                this.h_speed *= 0.95;
-            }
-        }
-
-        if (v_move == 0) {
-            if (Math.abs(this.v_speed) < 5) {
-                this.v_speed = 0;
-            }
-            else {
-                this.v_speed *= 0.95;
-            }
-        }
-
-
-        this.setVelocityX(this.h_speed);
-        this.setVelocityY(this.v_speed);
-
-
-
+        // Player movement
+        playerMovement(this);
 
         // Reload logic
         reloadWeapon(this);
 
-
         // Pickup item logic
         pickupItem(this);
-
 
         // Primary Weapon shooting logic
         fireWeapon(this);
