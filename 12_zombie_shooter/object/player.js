@@ -9,6 +9,7 @@ import { fireWeapon } from "../scripts/fireWeapon.js";
 import { reloadWeapon } from "../scripts/reloadWeapon.js";
 import { pickupItem } from "../scripts/pickupItem.js";
 import { playerMovement } from "../scripts/playerMovement.js";
+import { scriptLoader } from "../helper/scriptLoader.js";
 
 
 
@@ -30,24 +31,29 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.reloadInterval = null;
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);
-
     }
 
     preUpdate(time, delta) {
         // Update UI
         this.ammoText.text = `${this.loadedAmmo} / ${this.ammo}`;
 
-        // Player movement
-        playerMovement(this);
+        scriptLoader.load([
+            playerMovement,
+            reloadWeapon,
+            pickupItem,
+            fireWeapon,
+        ], this);
+        // // Player movement
+        // playerMovement(this);
 
-        // Reload logic
-        reloadWeapon(this);
+        // // Reload logic
+        // reloadWeapon(this);
 
-        // Pickup item logic
-        pickupItem(this);
+        // // Pickup item logic
+        // pickupItem(this);
 
-        // Primary Weapon shooting logic
-        fireWeapon(this);
+        // // Primary Weapon shooting logic
+        // fireWeapon(this);
 
     }
 
