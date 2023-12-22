@@ -24,13 +24,17 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.input = scene.input.keyboard.addKeys({ up: 'W', left: 'A', down: 'S', right: 'D', interact: "E", reload: "R" });
         this.h_speed = 0;
         this.v_speed = 0;
+        
         this.primaryWeapon = PRIMARY_WEAPONS.M4;
-        this.canShoot = true;
         this.ammo = 16;
         this.loadedAmmo = 3;
         this.reloadInterval = null;
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);
+
+        scriptLoader.load([
+            fireWeapon.construct
+        ], this);
     }
 
     preUpdate(time, delta) {
@@ -41,7 +45,7 @@ class Player extends Phaser.Physics.Arcade.Image {
             playerMovement,
             reloadWeapon,
             pickupItem,
-            fireWeapon,
+            fireWeapon.update,
         ], this);
         // // Player movement
         // playerMovement(this);
