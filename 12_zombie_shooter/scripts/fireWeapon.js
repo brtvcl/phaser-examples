@@ -9,7 +9,7 @@ const fireWeapon = {
     update: (object) => {
         const pointer = object.scene.input.activePointer;
         // Primary Weapon shooting logic
-        if (object.canShoot && pointer.isDown && object.primaryWeapon && object.loadedAmmo > 0) {
+        if (object.activeSlot == "PRIMARY" && object.canShoot && pointer.isDown && object.primaryWeapon && object.loadedAmmo > 0) {
             object.canShoot = false;
             object.loadedAmmo--;
     
