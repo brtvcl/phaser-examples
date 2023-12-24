@@ -34,3 +34,23 @@ export const ammoTypeItemMap = {
     LIGHT: "LIGHT_AMMO",
     SHOTGUN: "SHOTGUN_AMMO"
 };
+
+// Player slots
+export const SLOTS = {
+    PRIMARY: "PRIMARY",
+    SECONDARY: "SECONDARY",
+    HEALING: "HEALING",
+    UTIL: "UTIL",
+}
+
+export const SECONDARY_WEAPONS = {
+    GLOCK: "GLOCK"
+}
+
+export const SECONDARY_WEAPONS_CONFIG = {
+    GLOCK: {
+        fireRate: 15,
+        magazineCapacity: 19,
+        ammo: AMMO_TYPES.LIGHT,
+    },
+};
