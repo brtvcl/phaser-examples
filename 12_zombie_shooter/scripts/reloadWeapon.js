@@ -11,26 +11,30 @@ export function reloadWeapon(object) {
 
     const hasSpaceInMagazine = object.loadedAmmo < currentWeapon.magazineCapacity;
         const reloadClicked = Phaser.Input.Keyboard.JustDown(object.input.reload);
-        if (hasSpaceInMagazine && reloadClicked) {
+        if (hasSpaceInMagazine && reloadClicked && object.canShoot) {
             // Reload logic by ammo type
             switch (currentWeapon.ammo) {
                 case "SHOTGUN":
                     // In shothun ammo type we set interval for 500ms second to load 1 round at a time 
                     // When reloaded fully or round fired we stop interval
-                    object.reloadInterval = setInterval(() => {
-                        const roundsToLoad = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo);
-                        if (roundsToLoad < 1) {
-                            clearInterval(reloadInterval);
-                        }
-                        object.loadedAmmo += roundsToLoad;
-                        object.ammo -= roundsToLoad;
+                    if (!object.reloadInterval) {
+                        object.reloadInterval = setInterval(() => {
+                            const roundsToLoad = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo);
+                            if (roundsToLoad < 1) {
+                                clearInterval(object.reloadInterval);
+                                object.reloadInterval = null;
+                            }
+                            object.loadedAmmo += roundsToLoad;
+                            object.ammo -= roundsToLoad;
 
-                        const cannotReloadMore = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo) < 1;
+                            const cannotReloadMore = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo) < 1;
 
-                        if (cannotReloadMore) {
-                            clearInterval(object.reloadInterval);
-                        }
-                    }, 500);
+                            if (cannotReloadMore) {
+                                clearInterval(object.reloadInterval);
+                                object.reloadInterval = null;
+                            }
+                        }, 500);
+                    }
 
                     
 
