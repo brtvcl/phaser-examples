@@ -1,8 +1,7 @@
 import Zombie from "../object/zombie";
 import Item from "../object/item";
 import distance_to_point from "../helper/distance_to_point";
-import { ammoTypeItemMap } from "../constants";
-import { PRIMARY_WEAPONS_CONFIG } from "../constants";
+import { SECONDARY_WEAPONS_CONFIG, ammoTypeItemMap, PRIMARY_WEAPONS_CONFIG } from "../constants";
 
 function pickupItem(object) {
 	object.scene.children.list.forEach((child) => {
@@ -23,6 +22,7 @@ function pickupItem(object) {
 			const distanceToItem = distance_to_point(object.x, object.y, child.x, child.y);
 
 			const currentAmmoItemType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[object.primaryWeapon]?.ammo];
+			const currentSecondaryAmmoType = ammoTypeItemMap[SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon]?.ammo];
 			// Pickup weapons
 			if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(object.input.interact)) {
 				if (object.primaryWeapon) {
@@ -44,9 +44,15 @@ function pickupItem(object) {
 
 			}
 
-			// Pickup ammo
+			// Pickup Primary ammo
 			if (currentAmmoItemType == child.type && distanceToItem < 32) {
 				object.ammo += child.meta;
+				child.destroy();
+			}
+
+			// Pickup Secondary ammo
+			if (currentSecondaryAmmoType == child.type && distanceToItem < 32) {
+				object.secondaryAmmo += child.meta;
 				child.destroy();
 			}
 		}
