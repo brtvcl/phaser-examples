@@ -39,6 +39,7 @@ function preload() {
 	this.load.image("heavy_ammo", "./asset/heavy_ammo.png");
 	this.load.image("light_ammo", "./asset/light_ammo.png");
 	this.load.image("shotgun_ammo", "./asset/shotgun_ammo.png");
+	this.load.image("glock", "./asset/glock.png");
 }
 
 function create() {
@@ -79,6 +80,11 @@ function create() {
 	new Item({
 		type: "M4",
 		x: 450,
+		y: 450,
+	}, this);
+	new Item({
+		type: "GLOCK",
+		x: 200,
 		y: 450,
 	}, this);
 

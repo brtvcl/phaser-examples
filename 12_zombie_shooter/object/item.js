@@ -32,6 +32,7 @@ class Item extends Phaser.GameObjects.Image {
 			M4: "m4",
 			AR: "ar",
 			AK: "ak",
+			GLOCK: "glock",
 			HEAVY_AMMO: "heavy_ammo",
 			LIGHT_AMMO: "light_ammo",
 			SHOTGUN_AMMO: "shotgun_ammo"
