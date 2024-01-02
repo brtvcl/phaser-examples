@@ -35,11 +35,12 @@ class Player extends Phaser.Physics.Arcade.Image {
         this.v_speed = 0;
         this.activeSlot = SLOTS.PRIMARY;
         this.primaryWeapon = PRIMARY_WEAPONS.M4;
+        this.primaryWeaponSprayHeat = 0;
         this.ammo = 16;
         this.loadedAmmo = 3;
-        this.secondaryWeapon = SECONDARY_WEAPONS.GLOCK;
-        this.secondaryAmmo = 19;
-        this.loadedSecondaryAmmo = 19;
+        this.secondaryWeapon = null;
+        this.secondaryAmmo = 0;
+        this.loadedSecondaryAmmo = 0;
         this.reloadInterval = null;
         this.ammoText = new Phaser.GameObjects.Text(scene, 32, 32, this.ammo);
         scene.add.existing(this.ammoText);

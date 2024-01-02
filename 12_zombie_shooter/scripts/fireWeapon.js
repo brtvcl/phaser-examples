@@ -15,14 +15,13 @@ const fireWeapon = {
         if (object.activeSlot == "PRIMARY" && object.canShoot && pointer.isDown && object.primaryWeapon && object.loadedAmmo > 0) {
             object.canShoot = false;
             object.loadedAmmo--;
-
             const currentWeaponFireRate = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon].fireRate;
             setTimeout(() => {
                 object.canShoot = true;
             }, 1000 / currentWeaponFireRate);
             switch (object.primaryWeapon) {
                 case PRIMARY_WEAPONS.AR:
-
+                    object.primaryWeaponSprayHeat += 10;
                     new Bullet(object.scene, {
                         x: object.x,
                         y: object.y,
@@ -33,6 +32,7 @@ const fireWeapon = {
                     });
                     break;
                 case PRIMARY_WEAPONS.AK:
+                    object.primaryWeaponSprayHeat += 15;
                     new Bullet(object.scene, {
                         x: object.x,
                         y: object.y,
@@ -43,6 +43,7 @@ const fireWeapon = {
                     });
                     break;
                 case PRIMARY_WEAPONS.M4:
+                    object.primaryWeaponSprayHeat += 40;
                     for (let i = 0; i < 9; i++) {
                         new Bullet(object.scene, {
                             x: object.x,
@@ -55,12 +56,18 @@ const fireWeapon = {
                     }
             }
 
-        }
+        } 
 
         // Secondary Weapon shooting logic
         if (!pointer.isDown) {
             object.secondaryTriggerReleased = true;
         }
+
+        // Spray Cooldown
+        if (object.primaryWeaponSprayHeat > 0) {
+            object.primaryWeaponSprayHeat--;
+        }
+
         if (object.activeSlot == SLOTS.SECONDARY && object.secondaryCanShoot && pointer.isDown && object.secondaryTriggerReleased && object.secondaryWeapon && object.loadedSecondaryAmmo > 0) {
             object.secondaryCanShoot = false;
             object.secondaryTriggerReleased = false;
@@ -72,6 +79,7 @@ const fireWeapon = {
             }, 1000 / currentWeaponFireRate);
             switch (object.secondaryWeapon) {
                 case SECONDARY_WEAPONS.GLOCK:
+                    object.primaryWeaponSprayHeat += 6;
                     new Bullet(object.scene, {
                         x: object.x,
                         y: object.y,
