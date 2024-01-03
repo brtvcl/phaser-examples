@@ -21,7 +21,7 @@ const fireWeapon = {
             }, 1000 / currentWeaponFireRate);
             switch (object.primaryWeapon) {
                 case PRIMARY_WEAPONS.AR:
-                    object.primaryWeaponSprayHeat += 10;
+                    object.primaryWeaponSprayHeat += 8;
                     new Bullet(object.scene, {
                         x: object.x,
                         y: object.y,
@@ -32,7 +32,7 @@ const fireWeapon = {
                     });
                     break;
                 case PRIMARY_WEAPONS.AK:
-                    object.primaryWeaponSprayHeat += 15;
+                    object.primaryWeaponSprayHeat += 9;
                     new Bullet(object.scene, {
                         x: object.x,
                         y: object.y,
@@ -43,7 +43,7 @@ const fireWeapon = {
                     });
                     break;
                 case PRIMARY_WEAPONS.M4:
-                    object.primaryWeaponSprayHeat += 40;
+                    object.primaryWeaponSprayHeat += 80;
                     for (let i = 0; i < 9; i++) {
                         new Bullet(object.scene, {
                             x: object.x,
