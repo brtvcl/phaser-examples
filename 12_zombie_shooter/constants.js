@@ -15,16 +15,49 @@ export const PRIMARY_WEAPONS_CONFIG = {
         fireRate: 15,
         magazineCapacity: 25,
         ammo: AMMO_TYPES.LIGHT,
+        heatMap: {
+            10: 0,
+            20: -2,
+            30: -4,
+            40: -5,
+            50: -3,
+            60: -1,
+            70: 0,
+            80: 1,
+            90: 2
+        }
     },
     AK: {
         fireRate: 12,
         magazineCapacity: 30,
         ammo: AMMO_TYPES.HEAVY,
+        heatMap: {
+            10: 0,
+            20: -2,
+            30: -4,
+            40: -5,
+            50: -3,
+            60: -1,
+            70: 0,
+            80: 1,
+            90: 2
+        }
     },
     M4: {
         fireRate: 1,
         magazineCapacity: 5,
-        ammo: AMMO_TYPES.SHOTGUN
+        ammo: AMMO_TYPES.SHOTGUN,
+        heatMap: {
+            10: 0,
+            20: -2,
+            30: -4,
+            40: -5,
+            50: -3,
+            60: -1,
+            70: 0,
+            80: 1,
+            90: 2
+        }
     }
 };
 
