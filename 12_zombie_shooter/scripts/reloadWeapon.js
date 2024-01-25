@@ -20,15 +20,15 @@ export function reloadWeapon(object) {
                 // When reloaded fully or round fired we stop interval
                 if (!object.reloadInterval) {
                     object.reloadInterval = setInterval(() => {
-                        const roundsToLoad = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo);
+                        const roundsToLoad = Math.min(1, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
                         if (roundsToLoad < 1) {
                             clearInterval(object.reloadInterval);
                             object.reloadInterval = null;
                         }
                         object.loadedAmmo += roundsToLoad;
-                        object.ammo -= roundsToLoad;
+                        object.ammos[currentWeapon.ammo] -= roundsToLoad;
 
-                        const cannotReloadMore = Math.min(1, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo) < 1;
+                        const cannotReloadMore = Math.min(1, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo) < 1;
 
                         if (cannotReloadMore) {
                             clearInterval(object.reloadInterval);
@@ -45,9 +45,9 @@ export function reloadWeapon(object) {
                 object.canShoot = false;
                 setTimeout(() => {
                     object.canShoot = true;
-                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo);
+                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
                     object.loadedAmmo += roundsToLoad;
-                    object.ammo -= roundsToLoad;
+                    object.ammos[currentWeapon.ammo] -= roundsToLoad;
                 }, 1500)
                 break;
             case "LIGHT":
@@ -55,9 +55,9 @@ export function reloadWeapon(object) {
                 object.canShoot = false;
                 setTimeout(() => {
                     object.canShoot = true;
-                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammo, currentWeapon.magazineCapacity - object.loadedAmmo);
+                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
                     object.loadedAmmo += roundsToLoad;
-                    object.ammo -= roundsToLoad;
+                    object.ammos[currentWeapon.ammo] -= roundsToLoad;
                 }, 1200)
                 break;
             default:
@@ -79,9 +79,9 @@ export function reloadWeapon(object) {
                 object.canShoot = false;
                 setTimeout(() => {
                     object.canShoot = true;
-                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.secondaryAmmo, currentWeapon.magazineCapacity - object.loadedSecondaryAmmo);
+                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedSecondaryAmmo);
                     object.loadedSecondaryAmmo += roundsToLoad;
-                    object.secondaryAmmo -= roundsToLoad;
+                    object.ammos[currentWeapon.ammo] -= roundsToLoad;
                 }, 1200)
                 break;
             default:
