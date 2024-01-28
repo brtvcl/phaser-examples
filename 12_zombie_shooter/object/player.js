@@ -58,11 +58,16 @@ class Player extends Phaser.Physics.Arcade.Image {
         const currentSecondaryWeapon =  SECONDARY_WEAPONS_CONFIG[this.secondaryWeapon];
 
         // Update UI
+        let loadedAmmo = 0;
+        let availableAmmo = 0;
         if (this.activeSlot == SLOTS.PRIMARY) {
-            this.ammoText.text = `${this.loadedAmmo} / ${this?.ammos[currentPrimaryWeapon?.ammo]}`;
+            loadedAmmo = this.loadedAmmo || 0;
+            availableAmmo = this?.ammos[currentPrimaryWeapon?.ammo] || 0;
         } else if (this.activeSlot == SLOTS.SECONDARY) {
-            this.ammoText.text = `${this.loadedSecondaryAmmo} / ${this.ammos?.[currentSecondaryWeapon?.ammo]}`;
+            loadedAmmo = this.loadedSecondaryAmmo || 0;
+            availableAmmo = this.ammos?.[currentSecondaryWeapon?.ammo] || 0;
         }
+        this.ammoText.text =  `${loadedAmmo} / ${availableAmmo}`;
 
         scriptLoader.load([
             playerMovement,
