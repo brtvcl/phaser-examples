@@ -12,7 +12,7 @@ export function reloadWeapon(object) {
     const hasSpaceInMagazine = object.loadedAmmo < currentWeapon.magazineCapacity;
     const reloadClicked = Phaser.Input.Keyboard.JustDown(object.input.reload);
 
-    if (object.activeSlot == "PRIMARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
+    if (object.primaryWeapon && object.activeSlot == "PRIMARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
         // Reload logic by ammo type
         switch (currentWeapon.ammo) {
             case "SHOTGUN":
@@ -65,7 +65,7 @@ export function reloadWeapon(object) {
         }
     }
 
-    if (object.activeSlot == "SECONDARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
+    if (object.secondaryWeapon && object.activeSlot == "SECONDARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
         const currentWeapon = SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon];
 
         // Reload logic by ammo type
