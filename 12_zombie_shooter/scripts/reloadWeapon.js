@@ -1,7 +1,7 @@
 import { PRIMARY_WEAPONS, PRIMARY_WEAPONS_CONFIG, ammoTypeItemMap, SECONDARY_WEAPONS_CONFIG } from "../constants.js";
 
 export function reloadWeapon(object) {
-    const currentWeapon = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon];
+    const currentPrimaryWeapon = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon];
     const pointer = object.scene.input.activePointer;
 
     if (pointer.isDown && object.reloadInterval) {
@@ -9,26 +9,26 @@ export function reloadWeapon(object) {
         object.reloadInterval = null;
     }
 
-    const hasSpaceInMagazine = object.loadedAmmo < currentWeapon.magazineCapacity;
+    const hasSpaceInPrimaryMagazine = object.loadedAmmo < currentPrimaryWeapon.magazineCapacity;
     const reloadClicked = Phaser.Input.Keyboard.JustDown(object.input.reload);
 
-    if (object.primaryWeapon && object.activeSlot == "PRIMARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
+    if (object.primaryWeapon && object.activeSlot == "PRIMARY" && hasSpaceInPrimaryMagazine && reloadClicked && object.canShoot) {
         // Reload logic by ammo type
-        switch (currentWeapon.ammo) {
+        switch (currentPrimaryWeapon.ammo) {
             case "SHOTGUN":
                 // In shothun ammo type we set interval for 500ms second to load 1 round at a time 
                 // When reloaded fully or round fired we stop interval
                 if (!object.reloadInterval) {
                     object.reloadInterval = setInterval(() => {
-                        const roundsToLoad = Math.min(1, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
+                        const roundsToLoad = Math.min(1, object.ammos[currentPrimaryWeapon.ammo], currentPrimaryWeapon.magazineCapacity - object.loadedAmmo);
                         if (roundsToLoad < 1) {
                             clearInterval(object.reloadInterval);
                             object.reloadInterval = null;
                         }
                         object.loadedAmmo += roundsToLoad;
-                        object.ammos[currentWeapon.ammo] -= roundsToLoad;
+                        object.ammos[currentPrimaryWeapon.ammo] -= roundsToLoad;
 
-                        const cannotReloadMore = Math.min(1, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo) < 1;
+                        const cannotReloadMore = Math.min(1, object.ammos[currentPrimaryWeapon.ammo], currentPrimaryWeapon.magazineCapacity - object.loadedAmmo) < 1;
 
                         if (cannotReloadMore) {
                             clearInterval(object.reloadInterval);
@@ -45,9 +45,9 @@ export function reloadWeapon(object) {
                 object.canShoot = false;
                 setTimeout(() => {
                     object.canShoot = true;
-                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
+                    const roundsToLoad = Math.min(currentPrimaryWeapon.magazineCapacity, object.ammos[currentPrimaryWeapon.ammo], currentPrimaryWeapon.magazineCapacity - object.loadedAmmo);
                     object.loadedAmmo += roundsToLoad;
-                    object.ammos[currentWeapon.ammo] -= roundsToLoad;
+                    object.ammos[currentPrimaryWeapon.ammo] -= roundsToLoad;
                 }, 1500)
                 break;
             case "LIGHT":
@@ -55,9 +55,9 @@ export function reloadWeapon(object) {
                 object.canShoot = false;
                 setTimeout(() => {
                     object.canShoot = true;
-                    const roundsToLoad = Math.min(currentWeapon.magazineCapacity, object.ammos[currentWeapon.ammo], currentWeapon.magazineCapacity - object.loadedAmmo);
+                    const roundsToLoad = Math.min(currentPrimaryWeapon.magazineCapacity, object.ammos[currentPrimaryWeapon.ammo], currentPrimaryWeapon.magazineCapacity - object.loadedAmmo);
                     object.loadedAmmo += roundsToLoad;
-                    object.ammos[currentWeapon.ammo] -= roundsToLoad;
+                    object.ammos[currentPrimaryWeapon.ammo] -= roundsToLoad;
                 }, 1200)
                 break;
             default:
@@ -65,7 +65,10 @@ export function reloadWeapon(object) {
         }
     }
 
-    if (object.secondaryWeapon && object.activeSlot == "SECONDARY" && hasSpaceInMagazine && reloadClicked && object.canShoot) {
+
+    const currentSecondaryWeapon = SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon];
+    const hasSpaceInSecondaryMagazine = object.loadedSecondaryAmmo < currentSecondaryWeapon?.magazineCapacity;
+    if (object.secondaryWeapon && object.activeSlot == "SECONDARY" && hasSpaceInSecondaryMagazine && reloadClicked && object.canShoot) {
         const currentWeapon = SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon];
 
         // Reload logic by ammo type
@@ -74,7 +77,7 @@ export function reloadWeapon(object) {
                 break;
             case "HEAVY":
                 break;
-            case "LIGHT":
+            case "LIGHT":        
                 // In light ammo type we wait for 1.2 second to load the magazine and we fully reload 
                 object.canShoot = false;
                 setTimeout(() => {
