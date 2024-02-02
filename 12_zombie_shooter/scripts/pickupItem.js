@@ -4,7 +4,8 @@ import distance_to_point from "../helper/distance_to_point";
 import { SECONDARY_WEAPONS_CONFIG, ammoTypeItemMap, PRIMARY_WEAPONS_CONFIG, SECONDARY_WEAPONS } from "../constants";
 
 function pickupItem(object) {
-	const currentWeapon = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon];
+	const currentPrimaryWeapon = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon];
+	const currentSecondaryWeapon = SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon];
 	object.scene.children.list.forEach((child) => {
 		// Die from zombie touch
 		if (child instanceof Zombie) {
@@ -22,8 +23,9 @@ function pickupItem(object) {
 		if (child instanceof Item) {
 			const distanceToItem = distance_to_point(object.x, object.y, child.x, child.y);
 
-			const currentAmmoItemType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[object.primaryWeapon]?.ammo];
+			const currentPrimaryAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[object.primaryWeapon]?.ammo];
 			const currentSecondaryAmmoType = ammoTypeItemMap[SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon]?.ammo];
+
 			// Pickup primary weapons
 			if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(object.input.interact)) {
 				if (object.primaryWeapon) {
@@ -32,10 +34,13 @@ function pickupItem(object) {
 
 					// Drop ammo
 					const pickedUpAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[child.type]?.ammo];
-					if (currentAmmoItemType !== pickedUpAmmoType && object.ammos[currentWeapon.ammo] > 0) {
+					const ammoCannotBeUsed = currentPrimaryAmmoType !== currentSecondaryAmmoType && currentSecondaryAmmoType !== pickedUpAmmoType && currentPrimaryAmmoType !== pickedUpAmmoType;
+					const hasAmmo = object.ammos[currentPrimaryWeapon?.ammo] > 0;
+					console.log({pickedUpAmmoType, currentPrimaryAmmoType, currentSecondaryAmmoType});
+					if (ammoCannotBeUsed && hasAmmo) {
 						const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[object.primaryWeapon].ammo];
-						new Item({ x: object.x, y: object.y + 48, type: ammoType, meta: object.ammo }, object.scene);
-						object.ammos[currentWeapon.ammo] = 0;
+						new Item({ x: object.x, y: object.y + 48, type: ammoType, meta: object.ammos[currentPrimaryWeapon.ammo] }, object.scene);
+						object.ammos[currentPrimaryWeapon.ammo] = 0;
 					}
 
 				}
@@ -53,10 +58,12 @@ function pickupItem(object) {
 
 					// Drop ammo
 					const pickedUpAmmoType = ammoTypeItemMap[SECONDARY_WEAPONS_CONFIG[child.type]?.ammo];
-					if (currentSecondaryAmmoType !== pickedUpAmmoType && object.ammos[currentWeapon.ammo] > 0) {
+					const ammoCannotBeUsed = currentPrimaryAmmoType !== currentSecondaryAmmoType && currentSecondaryAmmoType !== pickedUpAmmoType && currentPrimaryAmmoType !== pickedUpAmmoType;
+					const hasAmmo = object.ammos[currentSecondaryWeapon?.ammo] > 0;
+					if (ammoCannotBeUsed && hasAmmo) {
 						const ammoType = ammoTypeItemMap[SECONDARY_WEAPONS_CONFIG[object.secondaryWeapon].ammo];
-						new Item({ x: object.x, y: object.y + 48, type: ammoType, meta: object.ammos[currentWeapon.ammo] }, object.scene);
-						object.ammos[currentWeapon.ammo] = 0;
+						new Item({ x: object.x, y: object.y + 48, type: ammoType, meta: object.ammos[currentSecondaryWeapon.ammo] }, object.scene);
+						object.ammos[currentSecondaryWeapon.ammo] = 0;
 					}
 
 				}
@@ -66,7 +73,7 @@ function pickupItem(object) {
 			}
 
 			// Pickup Primary ammo
-			if (currentAmmoItemType == child.type && distanceToItem < 32) {
+			if (currentPrimaryAmmoType == child.type && distanceToItem < 32) {
 				const primaryWeaponAmmo = PRIMARY_WEAPONS_CONFIG[object.primaryWeapon]?.ammo;
 				object.ammos[primaryWeaponAmmo] += child.meta;
 				child.destroy();
