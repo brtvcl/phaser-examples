@@ -30,13 +30,12 @@ function pickupItem(object) {
 			if (["M4", "AR", "AK"].includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(object.input.interact)) {
 				if (object.primaryWeapon) {
 					// Drop weapon
-					new Item({ x: object.x, y: object.y + 32, type: object.primaryWeapon }, object.scene);
+					new Item({ x: object.x, y: object.y + 32, type: object.primaryWeapon, meta: object.loadedAmmo }, object.scene);
 
 					// Drop ammo
 					const pickedUpAmmoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[child.type]?.ammo];
 					const ammoCannotBeUsed = currentPrimaryAmmoType !== currentSecondaryAmmoType && currentSecondaryAmmoType !== pickedUpAmmoType && currentPrimaryAmmoType !== pickedUpAmmoType;
 					const hasAmmo = object.ammos[currentPrimaryWeapon?.ammo] > 0;
-					console.log({pickedUpAmmoType, currentPrimaryAmmoType, currentSecondaryAmmoType});
 					if (ammoCannotBeUsed && hasAmmo) {
 						const ammoType = ammoTypeItemMap[PRIMARY_WEAPONS_CONFIG[object.primaryWeapon].ammo];
 						new Item({ x: object.x, y: object.y + 48, type: ammoType, meta: object.ammos[currentPrimaryWeapon.ammo] }, object.scene);
@@ -45,6 +44,7 @@ function pickupItem(object) {
 
 				}
 
+				object.loadedAmmo = child.meta || 0;
 				object.primaryWeapon = child.type;
 				child.destroy();
 
@@ -54,7 +54,7 @@ function pickupItem(object) {
 			if (Object.keys(SECONDARY_WEAPONS).includes(child.type) && distanceToItem < 32 && Phaser.Input.Keyboard.JustDown(object.input.interact)) {
 				if (object.secondaryWeapon) {
 					// Drop weapon
-					new Item({ x: object.x, y: object.y + 32, type: object.secondaryWeapon }, object.scene);
+					new Item({ x: object.x, y: object.y + 32, type: object.secondaryWeapon, meta: object.loadedSecondaryAmmo }, object.scene);
 
 					// Drop ammo
 					const pickedUpAmmoType = ammoTypeItemMap[SECONDARY_WEAPONS_CONFIG[child.type]?.ammo];
@@ -68,6 +68,7 @@ function pickupItem(object) {
 
 				}
 
+				object.loadedSecondaryAmmo = child.meta || 0; 
 				object.secondaryWeapon = child.type;
 				child.destroy();
 			}
