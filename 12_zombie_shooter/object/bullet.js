@@ -7,10 +7,11 @@ const BULLET_DEFAULTS = {
 
 class Bullet extends Phaser.GameObjects.Rectangle {
     
-
+    // I don't know how these calculations work I just copied them from random places and pasted it here
     constructor (scene, {x, y, targetX, targetY, spread, damage, speed}) {
+    
         super(scene, x, y, 10, 2, 0xffff00, 1);
-
+        this.setOrigin(0.5, 0.5);
         scene.add.existing(this);
 
         // Bullet config
@@ -34,11 +35,8 @@ class Bullet extends Phaser.GameObjects.Rectangle {
     }
 
     preUpdate (time, delta) {
-        const hMove =  scaleValue(0, 180, 1, -1, this.angleToRight);
-        const vMove =  scaleValue(0, 180, -1, 1, this.angleToUp);
-
-        this.x += hMove * this.speed;
-        this.y += vMove * this.speed;
+        this.x += this.speed * Math.cos(this.angle * (Math.PI / 180));
+        this.y += this.speed * Math.sin(this.angle * (Math.PI / 180));
     }
 
 }

@@ -97,7 +97,7 @@ const fireWeapon = {
                         y: object.y,
                         targetX: pointer.x,
                         targetY: pointer.y,
-                        spread: 5,
+                        spread: 0,
                         damage: 5
                     });
                     break;
