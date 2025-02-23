@@ -19,6 +19,9 @@ export default class Player extends Phaser.GameObjects.Rectangle {
     scene.input.on('pointerdown', this.handlePointerDown, this);
     scene.input.on('pointerup', this.handlePointerUp, this);
     scene.input.on('pointermove', this.handlePointerMove, this);
+
+    // Circle to highlight the closest enemy
+    this.closestEnemyCircle = scene.add.circle(0, 0, 50, 0xff0000, 0.3).setVisible(false);
   }
 
   handlePointerDown(pointer) {
@@ -44,6 +47,7 @@ export default class Player extends Phaser.GameObjects.Rectangle {
   }
 
   update() {
+    const enemies = this.scene.enemies;
     let velocityX = 0;
     let velocityY = 0;
 
@@ -81,6 +85,33 @@ export default class Player extends Phaser.GameObjects.Rectangle {
       const force = Math.min(distance / 100, 1);
       this.x += (Math.cos(angle) * force * this.speed * this.scene.game.loop.delta) / 1000;
       this.y += (Math.sin(angle) * force * this.speed * this.scene.game.loop.delta) / 1000;
+    }
+
+    // Find the closest enemy and draw a circle around it if within 100px
+    this.highlightClosestEnemy(enemies);
+  }
+
+  highlightClosestEnemy(enemies) {
+    let closestEnemy = null;
+    let closestDistance = Infinity;
+
+    // Find the closest enemy
+    for (const enemy of enemies) {
+      const dx = enemy.x - this.x;
+      const dy = enemy.y - this.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestEnemy = enemy;
+      }
+    }
+
+    // If a closest enemy is found and it's within 100px, draw a circle around it
+    if (closestEnemy && closestDistance <= 200) {
+      this.closestEnemyCircle.setPosition(closestEnemy.x, closestEnemy.y).setVisible(true);
+    } else {
+      this.closestEnemyCircle.setVisible(false);
     }
   }
 }
